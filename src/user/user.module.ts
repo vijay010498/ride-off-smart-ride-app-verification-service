@@ -20,5 +20,6 @@ import { UserTokenBlacklistSchema } from './user-token-blacklist.schema';
   ],
   controllers: [UserController],
   providers: [UserService],
+  exports: [UserService],
 })
 export class UserModule {}

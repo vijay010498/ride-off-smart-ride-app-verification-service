@@ -3,14 +3,20 @@ import { MyConfigService } from '../my-config/my-config.service';
 import {
   SQSClient,
   ReceiveMessageCommand,
-  DeleteMessageCommand,
+  Message,
+  DeleteMessageBatchCommand,
+  DeleteMessageBatchRequestEntry,
 } from '@aws-sdk/client-sqs';
+import { SqsProcessorService } from '../sqs_processor/sqs_processor.service';
 
 @Injectable()
 export class SqsService implements OnModuleInit {
   private readonly SQS: SQSClient;
   private readonly logger = new Logger(SqsService.name);
-  constructor(private readonly configService: MyConfigService) {
+  constructor(
+    private readonly configService: MyConfigService,
+    private readonly sqsProcessor: SqsProcessorService,
+  ) {
     this.SQS = new SQSClient({
       apiVersion: 'latest',
       region: this.configService.getAwsRegion(),
@@ -38,15 +44,14 @@ export class SqsService implements OnModuleInit {
 
     // Define the function to execute for polling
     const pollFunction = async () => {
-      console.log('inside-poll-func');
       try {
-        const messages = await this.receiveMessages(
+        const messages: Message[] = await this.receiveMessages(
           this.configService.getSqsQueueURL(),
         );
         if (messages.length > 0) {
           // Process received messages
-          console.log('Received messages:', messages);
-          // await this.deleteMessages(messages);
+          await this.sqsProcessor.ProcessSqsMessage(messages);
+          await this._deleteMessages(messages);
         }
       } catch (error) {
         this.logger.error('Error occurred during polling:', error);
@@ -77,15 +82,21 @@ export class SqsService implements OnModuleInit {
     }
   }
 
-  private async deleteMessages(messages: any[]) {
+  private async _deleteMessages(messages: Message[]) {
     try {
-      const deleteCommands = messages.map((message) => ({
+      const deleteCommands: DeleteMessageBatchRequestEntry[] = messages.map(
+        ({ ReceiptHandle }, index) => ({
+          Id: `Message${index + 1}`,
+          ReceiptHandle,
+        }),
+      );
+
+      const deleteRequest = {
         QueueUrl: this.configService.getSqsQueueURL(),
-        ReceiptHandle: message.ReceiptHandle,
-      }));
-      for (const command of deleteCommands) {
-        await this.SQS.send(new DeleteMessageCommand(command));
-      }
+        Entries: deleteCommands,
+      };
+
+      await this.SQS.send(new DeleteMessageBatchCommand(deleteRequest));
     } catch (error) {
       console.error('Error deleting messages from SQS:', error);
       throw error;

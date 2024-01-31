@@ -21,15 +21,17 @@ export class UserService {
     return user;
   }
 
-  // TODO use the ID given from Auth service
-  async createUserByPhone(phoneNumber: string, userId: string) {
+  async createUserByPhone(userObject: any, userId: string) {
     try {
-      const user = new this.userCollection({ phoneNumber });
-      await user.save(); // user is saved into DB by phoneNumber
+      // check if user already exists
+      const existingUser = await this.findById(userId);
+      if (existingUser) throw new Error('User With Given Id already exists');
+      const user = new this.userCollection({ ...userObject });
+      await user.save();
 
       return user;
-    } catch (createUserByPhone) {
-      this.logger.error('Error in Creating User By phone', createUserByPhone);
+    } catch (error) {
+      throw error;
     }
   }
 
