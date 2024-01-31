@@ -44,6 +44,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
     abortOnError: false,
+    cors: true,
   });
   app.setGlobalPrefix('api/verification');
   app.useGlobalPipes(
