@@ -6,10 +6,11 @@ import { MyConfigModule } from './my-config/my-config.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MyConfigService } from './my-config/my-config.service';
-import { AwsModule } from './aws/aws.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { TokenModule } from './token/token.module';
+import { SqsModule } from './sqs/sqs.module';
+import { SqsProcessorModule } from './sqs_processor/sqs_processor.module';
 
 @Module({
   imports: [
@@ -32,12 +33,14 @@ import { TokenModule } from './token/token.module';
       useFactory: (configService: MyConfigService) => ({
         uri: configService.getMongoUri(),
         dbName: configService.getMongoDatabase(),
+        autoIndex: true,
       }),
       inject: [MyConfigService],
     }),
     UserModule,
-    AwsModule,
     TokenModule,
+    SqsModule,
+    SqsProcessorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
