@@ -29,10 +29,16 @@ export class SqsProcessorService {
             const parsedBody = JSON.parse(Body);
             const parsedMessage = JSON.parse(parsedBody.Message);
             if (parsedMessage['EVENT_TYPE']) {
-              const { EVENT_TYPE, user, userId } = parsedMessage;
+              const { EVENT_TYPE, user, userId, token, updatedUser } =
+                parsedMessage;
+              this.logger.log(EVENT_TYPE, user, userId, token, updatedUser);
               switch (EVENT_TYPE) {
                 case 'USER_CREATED_BY_PHONE':
                   return this._handleUserCreationByPhone(user, userId);
+                case 'TOKEN_BLACKLIST':
+                  return this._handleTokenBlackListEvent(token);
+                case 'USER_UPDATED':
+                  return this._handleUserUpdatedEvent(updatedUser, userId);
                 default:
                   this.logger.warn(`Unhandled event type: ${EVENT_TYPE}`);
                   break;
@@ -53,6 +59,24 @@ export class SqsProcessorService {
       await this.userService.createUserByPhone(user, userId);
     } catch (error) {
       this.logger.error('Error creating user by phone:', error);
+      throw error;
+    }
+  }
+
+  private async _handleTokenBlackListEvent(token: string) {
+    try {
+      await this.userService.addTokenInBlackList(token);
+    } catch (error) {
+      this.logger.error('Error handleTokenBlackListEvent', error);
+      throw error;
+    }
+  }
+
+  private async _handleUserUpdatedEvent(updatedUser: any, userId: string) {
+    try {
+      await this.userService.updateUser(userId, updatedUser);
+    } catch (error) {
+      this.logger.error('Error handleUserUpdatedEvent', error);
       throw error;
     }
   }

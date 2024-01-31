@@ -51,6 +51,13 @@ export class UserService {
     });
   }
 
+  async addTokenInBlackList(accessToken: string) {
+    const blackListToken = new this.UserTokenBlacklistCollection({
+      token: accessToken,
+    });
+    return blackListToken.save();
+  }
+
   async updateUser(userId: string, updateDto: any) {
     return this._update(userId, updateDto);
   }
