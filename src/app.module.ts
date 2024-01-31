@@ -11,6 +11,7 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { TokenModule } from './token/token.module';
 import { SqsModule } from './sqs/sqs.module';
 import { SqsProcessorModule } from './sqs_processor/sqs_processor.module';
+import { AwsModule } from './aws/aws.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { SqsProcessorModule } from './sqs_processor/sqs_processor.module';
     TokenModule,
     SqsModule,
     SqsProcessorModule,
+    AwsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
