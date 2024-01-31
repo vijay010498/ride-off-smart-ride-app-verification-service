@@ -22,8 +22,11 @@ async function bootstrap() {
     'MONGO_VERIFY_DATABASE',
     'JWT_ACCESS_SECRET',
     'JWT_REFRESH_SECRET',
-    'aws_sns_access_key_id',
-    'aws_sns_secret_access_key',
+    'aws_sqs_access_key_id',
+    'aws_sqs_secret_access_key',
+    'aws_sqs_queue_name',
+    'aws_sqs_queue_url',
+    'aws_region',
   ];
 
   const missingVariables = requiredEnvVariables.filter((variable) => {
@@ -46,6 +49,8 @@ async function bootstrap() {
     }),
   );
   await app.listen(3000);
+
+  console.log('server-started');
 }
 bootstrap().catch((error) => {
   if (error.code && error.code.startsWith('ENV')) {

@@ -10,6 +10,7 @@ import { AwsModule } from './aws/aws.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { TokenModule } from './token/token.module';
+import { SqsModule } from './sqs/sqs.module';
 
 @Module({
   imports: [
@@ -32,12 +33,14 @@ import { TokenModule } from './token/token.module';
       useFactory: (configService: MyConfigService) => ({
         uri: configService.getMongoUri(),
         dbName: configService.getMongoDatabase(),
+        autoIndex: true,
       }),
       inject: [MyConfigService],
     }),
     UserModule,
     AwsModule,
     TokenModule,
+    SqsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

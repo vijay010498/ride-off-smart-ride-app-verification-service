@@ -25,11 +25,23 @@ export class MyConfigService {
     return this.configService.get<string>('NODE_ENV');
   }
 
-  getAWSSNSAccessID(): string {
-    return this.configService.get<string>('aws_sns_access_key_id');
+  getAWSSQSAccessID(): string {
+    return this.configService.get<string>('aws_sqs_access_key_id');
   }
 
-  getAWSSNSSecretKey(): string {
-    return this.configService.get<string>('aws_sns_secret_access_key');
+  getAWSSQSSecretKey(): string {
+    return this.configService.get<string>('aws_sqs_secret_access_key');
+  }
+
+  getAwsRegion(): string {
+    return this.configService.get<string>('aws_region');
+  }
+
+  getSqsQueueName(): string {
+    return this.configService.get<string>('aws_sqs_queue_name');
+  }
+
+  getSqsQueueURL(): string {
+    return this.configService.get<string>('aws_sqs_queue_url');
   }
 }
