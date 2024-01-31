@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 
 import { Message } from '@aws-sdk/client-sqs';
+import { Events } from './events.enums';
 
 @Injectable()
 export class SqsProcessorService {
@@ -33,11 +34,11 @@ export class SqsProcessorService {
                 parsedMessage;
               this.logger.log(EVENT_TYPE, user, userId, token, updatedUser);
               switch (EVENT_TYPE) {
-                case 'USER_CREATED_BY_PHONE':
+                case Events.userCreatedByPhone:
                   return this._handleUserCreationByPhone(user, userId);
-                case 'TOKEN_BLACKLIST':
+                case Events.tokenBlackList:
                   return this._handleTokenBlackListEvent(token);
-                case 'USER_UPDATED':
+                case Events.userUpdated:
                   return this._handleUserUpdatedEvent(updatedUser, userId);
                 default:
                   this.logger.warn(`Unhandled event type: ${EVENT_TYPE}`);
