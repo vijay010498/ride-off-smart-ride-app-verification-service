@@ -15,6 +15,8 @@ import { TokenBlacklistGuard } from '../common/guards/tokenBlacklist.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { VerifyUserDto } from './dtos/verify-user.dto';
 import { ImageFileFilter } from './ImageFileFilter';
+import { S3Service } from '../s3/s3.service';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 interface UploadedFilesDto extends VerifyUserDto {
   selfie: Express.Multer.File[];
@@ -26,7 +28,10 @@ interface UploadedFilesDto extends VerifyUserDto {
 //@Serialize(UserDto)
 export class UserController {
   private readonly logger = new Logger(UserController.name);
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly s3Service: S3Service,
+  ) {}
 
   @UseGuards(AccessTokenGuard, IsBlockedGuard, TokenBlacklistGuard)
   @Post()
@@ -52,15 +57,17 @@ export class UserController {
       },
     ),
   )
-  verifyUser(
+  async verifyUser(
     @UploadedFiles()
     files: UploadedFilesDto,
+    @CurrentUser() user: any,
   ) {
     try {
       if (!files || !files.selfie || !files.photoId) {
         throw new Error('Both selfie and photoId fields are required');
       }
-      return files;
+      await this.s3Service.uploadUserSelfie(user.id, files.selfie[0].buffer);
+      return 'selfie Uploaded Success';
     } catch (error) {
       throw new BadRequestException(error.message);
     }

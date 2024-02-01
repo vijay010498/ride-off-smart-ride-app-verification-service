@@ -56,4 +56,16 @@ export class MyConfigService {
   getVerifyTopicSNSArn(): string {
     return this.configService.get<string>('VERIFY_TOPIC_SNS_ARN');
   }
+
+  getAWSS3AccessID(): string {
+    return this.configService.get<string>('aws_s3_access_key_id');
+  }
+
+  getAWSS3SecretKey(): string {
+    return this.configService.get<string>('aws_s3_secret_access_key');
+  }
+
+  getAWSS3BucketName(): string {
+    return this.configService.get<string>('aws_verifiation_s3_bucket');
+  }
 }
