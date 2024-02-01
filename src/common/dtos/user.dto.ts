@@ -20,11 +20,11 @@ export class UserDto {
   @Expose()
   isBlocked: boolean;
 
-  @Transform(({ obj }) => obj.lastLocation.coordinates[0])
+  @Transform(({ obj }) => obj.lastLocation?.coordinates[0])
   @Expose()
   lastLongitude: number;
 
-  @Transform(({ obj }) => obj.lastLocation.coordinates[1])
+  @Transform(({ obj }) => obj.lastLocation?.coordinates[1])
   @Expose()
   lastLatitude: number;
 

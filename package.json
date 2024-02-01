@@ -20,6 +20,7 @@
     "test:e2e": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.503.1",
     "@aws-sdk/client-sqs": "^3.502.0",
     "@nestjs/cache-manager": "^2.2.0",
     "@nestjs/common": "^10.0.0",
@@ -30,7 +31,6 @@
     "@nestjs/mongoose": "^10.0.2",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
-    "@ssut/nestjs-sqs": "^2.2.0",
     "argon2": "^0.31.2",
     "cache-manager": "^5.4.0",
     "class-transformer": "^0.5.1",

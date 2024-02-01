@@ -44,4 +44,16 @@ export class MyConfigService {
   getSqsQueueURL(): string {
     return this.configService.get<string>('aws_sqs_queue_url');
   }
+
+  getAWSSNSAccessID(): string {
+    return this.configService.get<string>('aws_sns_access_key_id');
+  }
+
+  getAWSSNSSecretKey(): string {
+    return this.configService.get<string>('aws_sns_secret_access_key');
+  }
+
+  getVerifyTopicSNSArn(): string {
+    return this.configService.get<string>('VERIFY_TOPIC_SNS_ARN');
+  }
 }
