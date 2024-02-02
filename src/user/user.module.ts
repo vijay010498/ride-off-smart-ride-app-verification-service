@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './user.schema';
 import { UserTokenBlacklistSchema } from './user-token-blacklist.schema';
 import { S3Module } from '../s3/s3.module';
+import { VerificationModule } from '../verification/verification.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { S3Module } from '../s3/s3.module';
       },
     ]),
     S3Module,
+    VerificationModule,
   ],
   controllers: [UserController],
   providers: [UserService],

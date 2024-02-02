@@ -13,6 +13,7 @@ import { SqsModule } from './sqs/sqs.module';
 import { SqsProcessorModule } from './sqs_processor/sqs_processor.module';
 import { AwsModule } from './aws/aws.module';
 import { S3Module } from './s3/s3.module';
+import { VerificationModule } from './verification/verification.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { S3Module } from './s3/s3.module';
     SqsProcessorModule,
     AwsModule,
     S3Module,
+    VerificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

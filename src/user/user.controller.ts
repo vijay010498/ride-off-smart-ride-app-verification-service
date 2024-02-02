@@ -15,7 +15,6 @@ import { TokenBlacklistGuard } from '../common/guards/tokenBlacklist.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { VerifyUserDto } from './dtos/verify-user.dto';
 import { ImageFileFilter } from './ImageFileFilter';
-import { S3Service } from '../s3/s3.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 interface UploadedFilesDto extends VerifyUserDto {
@@ -28,10 +27,7 @@ interface UploadedFilesDto extends VerifyUserDto {
 //@Serialize(UserDto)
 export class UserController {
   private readonly logger = new Logger(UserController.name);
-  constructor(
-    private readonly userService: UserService,
-    private readonly s3Service: S3Service,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @UseGuards(AccessTokenGuard, IsBlockedGuard, TokenBlacklistGuard)
   @Post()
@@ -60,16 +56,18 @@ export class UserController {
   async verifyUser(
     @UploadedFiles()
     files: UploadedFilesDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: any, // TODO add guard to make sure user is not already verified
   ) {
-    try {
-      if (!files || !files.selfie || !files.photoId) {
-        throw new Error('Both selfie and photoId fields are required');
-      }
-      await this.s3Service.uploadUserSelfie(user.id, files.selfie[0].buffer);
-      return 'selfie Uploaded Success';
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    if (!files || !files.selfie || !files.photoId) {
+      throw new BadRequestException(
+        'Both selfie and photoId fields are required',
+      );
     }
+    // Only Image upload happens in sync - verification happens in async
+    return this.userService.verifyUser(
+      user.id,
+      files.selfie[0].buffer,
+      files.photoId[0].buffer,
+    );
   }
 }

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { MyConfigService } from '../my-config/my-config.service';
 import * as Buffer from 'buffer';
+import mongoose from 'mongoose';
 @Injectable()
 export class S3Service {
   private readonly S3: S3Client;
@@ -25,19 +26,36 @@ export class S3Service {
         Body: fileContent,
       });
       await this.S3.send(uploadCommand);
+      const s3URI = `s3://${this.configService.getAWSS3BucketName()}/${key}`;
+      const objectURL = `https://${this.configService.getAWSS3BucketName()}.s3.${this.configService.getAwsRegion()}.amazonaws.com/${key}`;
       this.logger.log(
-        `File uploaded to S3: s3://${this.configService.getAWSS3BucketName()}/${key}`,
+        `File uploaded to s3 URI: ${s3URI} , Object URL: ${objectURL}`,
       );
+
+      return {
+        s3URI,
+        imageURL: objectURL,
+      };
     } catch (error) {
-      this.logger.error(
-        `Error uploading file to S3: s3://${this.configService.getAWSS3BucketName()}/${key}`,
-        error,
-      );
-      // TODO throw error
+      this.logger.error(`Error uploading file to S3`, error);
+      throw error;
     }
   }
-  uploadUserSelfie(userId: string, image: Buffer) {
-    const selfieKey = `${userId}/verification/images/selfie.jpg`;
-    return this._uploadFile(selfieKey, image);
+  uploadUserSelfie(
+    userId: string,
+    selfieImage: Buffer,
+    verificationId: mongoose.Types.ObjectId,
+  ) {
+    const selfieKey = `${userId}/verification/${verificationId}/images/selfie.jpg`;
+    return this._uploadFile(selfieKey, selfieImage);
+  }
+
+  uploadUserPhotoId(
+    userId: string,
+    photoIdImage: Buffer,
+    verificationId: mongoose.Types.ObjectId,
+  ) {
+    const selfieKey = `${userId}/verification/${verificationId}/images/photoId.jpg`;
+    return this._uploadFile(selfieKey, photoIdImage);
   }
 }
