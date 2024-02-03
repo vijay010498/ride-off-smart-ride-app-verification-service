@@ -8,10 +8,6 @@ interface Location {
   coordinates: [number, number]; // [longitude, latitude]
 }
 
-export type LastLocation = {
-  lastLocation: Location;
-};
-
 @Schema({ timestamps: true, id: true })
 export class User {
   @Prop({

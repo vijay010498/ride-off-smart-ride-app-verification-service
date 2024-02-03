@@ -12,6 +12,8 @@ import { TokenModule } from './token/token.module';
 import { SqsModule } from './sqs/sqs.module';
 import { SqsProcessorModule } from './sqs_processor/sqs_processor.module';
 import { AwsModule } from './aws/aws.module';
+import { S3Module } from './s3/s3.module';
+import { VerificationModule } from './verification/verification.module';
 
 @Module({
   imports: [
@@ -43,6 +45,8 @@ import { AwsModule } from './aws/aws.module';
     SqsModule,
     SqsProcessorModule,
     AwsModule,
+    S3Module,
+    VerificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

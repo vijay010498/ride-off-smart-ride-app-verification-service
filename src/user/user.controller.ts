@@ -15,6 +15,9 @@ import { TokenBlacklistGuard } from '../common/guards/tokenBlacklist.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { VerifyUserDto } from './dtos/verify-user.dto';
 import { ImageFileFilter } from './ImageFileFilter';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { IsSignedUpGuard } from '../common/guards/isSignedUp.guard';
+import { UserNotVerifiedBeforeAndNotStarted } from '../common/guards/userNotVerifiedAndNotStarted.guard';
 
 interface UploadedFilesDto extends VerifyUserDto {
   selfie: Express.Multer.File[];
@@ -22,13 +25,14 @@ interface UploadedFilesDto extends VerifyUserDto {
 }
 
 @Controller('user')
+@UseGuards(AccessTokenGuard, IsBlockedGuard, TokenBlacklistGuard)
 @UseInterceptors(CurrentUserInterceptor)
 //@Serialize(UserDto)
 export class UserController {
   private readonly logger = new Logger(UserController.name);
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AccessTokenGuard, IsBlockedGuard, TokenBlacklistGuard)
+  @UseGuards(IsSignedUpGuard, UserNotVerifiedBeforeAndNotStarted) // user should be signedUp and should not be verified and Verification should not be started before to request new verification
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -52,17 +56,21 @@ export class UserController {
       },
     ),
   )
-  verifyUser(
+  async verifyUser(
     @UploadedFiles()
     files: UploadedFilesDto,
+    @CurrentUser() user: any, // TODO add guard to make sure user is not already verified
   ) {
-    try {
-      if (!files || !files.selfie || !files.photoId) {
-        throw new Error('Both selfie and photoId fields are required');
-      }
-      return files;
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    if (!files || !files.selfie || !files.photoId) {
+      throw new BadRequestException(
+        'Both selfie and photoId fields are required',
+      );
     }
+    // Only Image upload happens in sync - verification happens in async
+    return this.userService.verifyUser(
+      user.id,
+      files.selfie[0].buffer,
+      files.photoId[0].buffer,
+    );
   }
 }
