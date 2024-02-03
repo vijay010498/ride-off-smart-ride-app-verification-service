@@ -16,6 +16,8 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { VerifyUserDto } from './dtos/verify-user.dto';
 import { ImageFileFilter } from './ImageFileFilter';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { IsSignedUpGuard } from '../common/guards/isSignedUp.guard';
+import { UserNotVerifiedBeforeAndNotStarted } from '../common/guards/userNotVerifiedAndNotStarted.guard';
 
 interface UploadedFilesDto extends VerifyUserDto {
   selfie: Express.Multer.File[];
@@ -23,13 +25,14 @@ interface UploadedFilesDto extends VerifyUserDto {
 }
 
 @Controller('user')
+@UseGuards(AccessTokenGuard, IsBlockedGuard, TokenBlacklistGuard)
 @UseInterceptors(CurrentUserInterceptor)
 //@Serialize(UserDto)
 export class UserController {
   private readonly logger = new Logger(UserController.name);
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AccessTokenGuard, IsBlockedGuard, TokenBlacklistGuard)
+  @UseGuards(IsSignedUpGuard, UserNotVerifiedBeforeAndNotStarted) // user should be signedUp and should not be verified and Verification should not be started before to request new verification
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor(
