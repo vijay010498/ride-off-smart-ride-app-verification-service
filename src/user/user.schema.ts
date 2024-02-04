@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 export enum GeoJSONType {
   Point = 'Point',
 }
@@ -35,6 +35,9 @@ export class User {
     default: false,
   })
   faceIdVerified: boolean;
+
+  @Prop()
+  faceVerificationId: mongoose.Types.ObjectId;
 
   @Prop()
   refreshToken: string;
