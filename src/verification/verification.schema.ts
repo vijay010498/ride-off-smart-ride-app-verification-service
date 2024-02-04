@@ -36,6 +36,9 @@ export class Verification {
     default: VerificationStatus.Started,
   })
   status: string;
+
+  @Prop()
+  verificationResponseFromAws: string;
 }
 
 export type VerificationDocument = Verification & Document;

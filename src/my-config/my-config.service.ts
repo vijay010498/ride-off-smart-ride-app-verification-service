@@ -68,4 +68,12 @@ export class MyConfigService {
   getAWSS3BucketName(): string {
     return this.configService.get<string>('aws_verifiation_s3_bucket');
   }
+
+  getAWSRekognitionAccessID(): string {
+    return this.configService.get<string>('aws_rekognition_access_key_id');
+  }
+
+  getAWSRekognitionSecretKey(): string {
+    return this.configService.get<string>('aws_rekognition_secret_access_key');
+  }
 }

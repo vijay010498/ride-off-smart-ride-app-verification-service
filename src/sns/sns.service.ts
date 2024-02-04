@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
 import { MyConfigService } from '../my-config/my-config.service';
+import mongoose from 'mongoose';
+import { Events } from '../common/enums/events.enums';
 
 @Injectable()
 export class SnsService {
@@ -18,7 +20,7 @@ export class SnsService {
     });
   }
 
-  private async _publish(Message: string) {
+  private async _publishToVerifyTopicARN(Message: string) {
     try {
       const messageParams = {
         Message,
@@ -35,5 +37,18 @@ export class SnsService {
         _publishToVerifyTopicARNError,
       );
     }
+  }
+
+  async publishUserFaceVerifiedEvent(
+    userId: mongoose.Types.ObjectId,
+    verificationId: mongoose.Types.ObjectId,
+  ) {
+    const snsMessage = {
+      userId,
+      verificationId,
+      EVENT_TYPE: Events.userFaceVerified,
+    };
+    // {"userId": "65b84dffb9fe51e7778da", "verificationId": "65b84dffb9fe51e777asds", "EVENT_TYPE":"VERIFY_USER_FACE_VERIFIED"}
+    return this._publishToVerifyTopicARN(JSON.stringify(snsMessage));
   }
 }

@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UserService } from '../user/user.service';
 
 import { Message } from '@aws-sdk/client-sqs';
 import { Events } from '../common/enums/events.enums';
@@ -7,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument } from '../user/user.schema';
 import { UserTokenBlacklistDocument } from '../user/user-token-blacklist.schema';
+import { RekognitionService } from '../rekognition/rekognition.service';
 
 @Injectable()
 export class SqsProcessorService {
@@ -16,6 +16,7 @@ export class SqsProcessorService {
     @InjectModel('User') private readonly userCollection: Model<UserDocument>,
     @InjectModel('UserTokenBlacklist')
     private readonly UserTokenBlacklistCollection: Model<UserTokenBlacklistDocument>,
+    private readonly rekognition: RekognitionService,
   ) {}
 
   async ProcessSqsMessage(messages: Message[]) {
@@ -151,6 +152,11 @@ export class SqsProcessorService {
   }
 
   private async _handleVerifyUser(verificationId: string) {
-    this.logger.log('_handleVerifyUser', verificationId);
+    try {
+      await this.rekognition.verifyUser(verificationId);
+    } catch (error) {
+      this.logger.error('_handleVerifyUser-error-sqs-processor', error);
+      throw error;
+    }
   }
 }

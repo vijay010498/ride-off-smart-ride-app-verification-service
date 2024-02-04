@@ -14,6 +14,7 @@ import { SqsProcessorModule } from './sqs_processor/sqs_processor.module';
 import { S3Module } from './s3/s3.module';
 import { VerificationModule } from './verification/verification.module';
 import { SnsModule } from './sns/sns.module';
+import { RekognitionModule } from './rekognition/rekognition.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { SnsModule } from './sns/sns.module';
     S3Module,
     VerificationModule,
     SnsModule,
+    RekognitionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
