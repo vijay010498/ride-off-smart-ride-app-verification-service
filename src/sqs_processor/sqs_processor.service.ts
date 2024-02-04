@@ -43,7 +43,6 @@ export class SqsProcessorService {
     //      }
     // ]
 
-    this.logger.log('receivedMessages', messages);
     try {
       await Promise.all(
         messages.map(({ Body }) => {
@@ -62,6 +61,7 @@ export class SqsProcessorService {
             }
           } catch (error) {
             this.logger.error('Error Parsing SQS message:', error);
+            throw error;
           }
         }),
       );
@@ -156,7 +156,6 @@ export class SqsProcessorService {
       await this.rekognition.verifyUser(verificationId);
     } catch (error) {
       this.logger.error('_handleVerifyUser-error-sqs-processor', error);
-      throw error;
     }
   }
 }

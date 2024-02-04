@@ -53,8 +53,15 @@ export class SqsService implements OnModuleInit {
         );
         if (messages.length > 0) {
           // Process received messages
-          await this.sqsProcessor.ProcessSqsMessage(messages);
-          await this._deleteMessages(messages);
+          try {
+            await this.sqsProcessor.ProcessSqsMessage(messages);
+            await this._deleteMessages(messages);
+          } catch (error) {
+            this.logger.error(
+              'Error occurred during sqs message processing / deleting:',
+              error,
+            );
+          }
         }
       } catch (error) {
         this.logger.error('Error occurred during polling:', error);

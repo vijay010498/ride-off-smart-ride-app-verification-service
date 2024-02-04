@@ -401,6 +401,7 @@ export class RekognitionService {
 
         if (userVerifiedStatus === VerificationStatus.Verified) {
           // send SNS event only if user is verified
+          // SNS event
           await this.snsService.publishUserFaceVerifiedEvent(
             verification.userId,
             verification.id,
@@ -414,6 +415,10 @@ export class RekognitionService {
       }
       return 'Verification Details not Found';
     } catch (error) {
+      // If any error make verification status as failed - so user can request new verification
+      await this.verificationCollection.findByIdAndUpdate(verificationId, {
+        status: VerificationStatus.Failed,
+      });
       this.logger.error('verifyUser-rekognition-error', error);
       throw error;
     }
