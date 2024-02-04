@@ -3,8 +3,8 @@ import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
 import { MyConfigService } from '../my-config/my-config.service';
 
 @Injectable()
-export class AwsService {
-  private readonly logger = new Logger(AwsService.name);
+export class SnsService {
+  private readonly logger = new Logger(SnsService.name);
   private readonly SNS: SNSClient;
 
   constructor(private readonly configService: MyConfigService) {
@@ -18,7 +18,7 @@ export class AwsService {
     });
   }
 
-  private async _publishToVerifyTopicARN(Message: string) {
+  private async _publish(Message: string) {
     try {
       const messageParams = {
         Message,
