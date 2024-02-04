@@ -6,8 +6,11 @@ import {
   Message,
   DeleteMessageBatchCommand,
   DeleteMessageBatchRequestEntry,
+  SendMessageCommand,
 } from '@aws-sdk/client-sqs';
 import { SqsProcessorService } from '../sqs_processor/sqs_processor.service';
+import { Events } from '../common/enums/events.enums';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class SqsService implements OnModuleInit {
@@ -40,7 +43,7 @@ export class SqsService implements OnModuleInit {
   }
 
   private async _pollMessages() {
-    console.log('started-polling');
+    this.logger.log('started-polling');
 
     // Define the function to execute for polling
     const pollFunction = async () => {
@@ -97,9 +100,34 @@ export class SqsService implements OnModuleInit {
       };
 
       await this.SQS.send(new DeleteMessageBatchCommand(deleteRequest));
+      this.logger.log('Messages deleted from SQS');
     } catch (error) {
-      console.error('Error deleting messages from SQS:', error);
+      this.logger.error('Error deleting messages from SQS:', error);
       throw error;
     }
+  }
+
+  private async _sendMessageToQueue(message: string) {
+    try {
+      const params = {
+        QueueUrl: this.configService.getSqsQueueURL(),
+        MessageBody: message,
+      };
+
+      await this.SQS.send(new SendMessageCommand(params));
+      this.logger.log('Message sent to SQS queue - Success');
+    } catch (error) {
+      this.logger.error('_sendMessageToQueue-error', error);
+      throw error;
+    }
+  }
+
+  async verifyUserEvent(verificationId: mongoose.Types.ObjectId) {
+    return this._sendMessageToQueue(
+      JSON.stringify({
+        verificationId,
+        EVENT_TYPE: Events.verifyUser,
+      }),
+    );
   }
 }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { VerificationService } from './verification.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { VerificationSchema } from './verification.schema';
+import { SqsModule } from '../sqs/sqs.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { VerificationSchema } from './verification.schema';
         schema: VerificationSchema,
       },
     ]),
+    SqsModule,
   ],
   providers: [VerificationService],
   exports: [VerificationService],

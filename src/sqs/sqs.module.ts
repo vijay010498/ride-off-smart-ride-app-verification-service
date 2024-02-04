@@ -6,5 +6,6 @@ import { SqsProcessorModule } from '../sqs_processor/sqs_processor.module';
 @Module({
   imports: [MyConfigModule, SqsProcessorModule],
   providers: [SqsService],
+  exports: [SqsService],
 })
 export class SqsModule {}

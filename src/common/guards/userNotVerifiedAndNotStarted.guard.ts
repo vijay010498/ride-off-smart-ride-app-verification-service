@@ -6,6 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { VerificationService } from '../../verification/verification.service';
+import { VerificationStatus } from '../enums/verification-status.enum';
 
 @Injectable()
 export class UserNotVerifiedBeforeAndNotStarted implements CanActivate {
@@ -22,9 +23,10 @@ export class UserNotVerifiedBeforeAndNotStarted implements CanActivate {
       const userVerifiedOrStarted =
         await this.verificationService.isUserVerifiedOrStarted(userId);
       if (!userVerifiedOrStarted) return true;
-      throw new BadRequestException(
-        'User Already Verified / Verification In-Progress',
-      );
+      if (userVerifiedOrStarted.status === VerificationStatus.Verified)
+        throw new BadRequestException('User Already Verified');
+      if (userVerifiedOrStarted.status === VerificationStatus.Started)
+        throw new BadRequestException('User Verification in-progress');
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
       this.logger.error('Error in UserNotVerifiedBeforeGuard', error);
