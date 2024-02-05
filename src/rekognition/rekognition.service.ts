@@ -35,6 +35,7 @@ export class RekognitionService {
       const verification =
         await this.verificationCollection.findById(verificationId);
       // TODO handle case one user multiple verified accounts in future
+      // TODO add code to make sure photoId is actual PhotoId not just face Photo
       if (verification) {
         // create compare face request and compare face
         // Source = photoId
