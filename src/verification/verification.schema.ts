@@ -39,6 +39,9 @@ export class Verification {
 
   @Prop()
   verificationResponseFromAws: string;
+
+  @Prop()
+  verificationFailedReason: string;
 }
 
 export type VerificationDocument = Verification & Document;

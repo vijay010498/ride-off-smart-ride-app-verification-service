@@ -66,7 +66,6 @@ export class UserController {
         'Both selfie and photoId fields are required',
       );
     }
-    // TODO add code to make sure photoId is actual PhotoId not just face Photo
     // Only Image upload happens in sync - verification happens in async
     return this.userService.verifyUser(
       user.id,

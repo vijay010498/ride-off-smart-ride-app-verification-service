@@ -33,8 +33,12 @@ export class MyConfigService {
     return this.configService.get<string>('aws_sqs_secret_access_key');
   }
 
-  getAwsRegion(): string {
-    return this.configService.get<string>('aws_region');
+  getDefaultAwsRegion(): string {
+    return this.configService.get<string>('aws_region_default');
+  }
+
+  getUsEastOneAwsRegion(): string {
+    return this.configService.get<string>('aws_region_us_east_1');
   }
 
   getSqsQueueName(): string {

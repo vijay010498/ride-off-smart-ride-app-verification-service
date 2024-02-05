@@ -1,5 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  GetObjectRequest,
+} from '@aws-sdk/client-s3';
 import { MyConfigService } from '../my-config/my-config.service';
 import * as Buffer from 'buffer';
 import mongoose from 'mongoose';
@@ -10,14 +15,29 @@ export class S3Service {
   constructor(private readonly configService: MyConfigService) {
     this.S3 = new S3Client({
       apiVersion: 'latest',
-      region: this.configService.getAwsRegion(),
+      region: this.configService.getDefaultAwsRegion(),
       credentials: {
         accessKeyId: this.configService.getAWSS3AccessID(),
         secretAccessKey: this.configService.getAWSS3SecretKey(),
       },
     });
   }
+  async downloadFile(bucketName: string, objectKey: string) {
+    try {
+      const getObjectRequest: GetObjectRequest = {
+        Bucket: bucketName,
+        Key: objectKey,
+      };
+      const response = await this.S3.send(
+        new GetObjectCommand(getObjectRequest),
+      );
 
+      return response.Body.transformToByteArray();
+    } catch (error) {
+      this.logger.error(`Error download file from S3`, error);
+      throw error;
+    }
+  }
   private async _uploadFile(key: string, fileContent: Buffer) {
     try {
       const uploadCommand = new PutObjectCommand({
@@ -27,7 +47,7 @@ export class S3Service {
       });
       await this.S3.send(uploadCommand);
       const s3URI = `s3://${this.configService.getAWSS3BucketName()}/${key}`;
-      const objectURL = `https://${this.configService.getAWSS3BucketName()}.s3.${this.configService.getAwsRegion()}.amazonaws.com/${key}`;
+      const objectURL = `https://${this.configService.getAWSS3BucketName()}.s3.${this.configService.getDefaultAwsRegion()}.amazonaws.com/${key}`;
       this.logger.log(
         `File uploaded to s3 URI: ${s3URI} , Object URL: ${objectURL}`,
       );

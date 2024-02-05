@@ -43,6 +43,7 @@ export class VerificationService {
         verificationId,
         {
           status: VerificationStatus.Failed,
+          verificationFailedReason: 'Server Error',
         },
         { new: true },
       );

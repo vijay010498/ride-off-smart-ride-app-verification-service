@@ -4,6 +4,7 @@ import { MyConfigModule } from '../my-config/my-config.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { VerificationSchema } from '../verification/verification.schema';
 import { SnsModule } from '../sns/sns.module';
+import { S3Module } from '../s3/s3.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SnsModule } from '../sns/sns.module';
       },
     ]),
     SnsModule,
+    S3Module,
   ],
   providers: [RekognitionService],
   exports: [RekognitionService],

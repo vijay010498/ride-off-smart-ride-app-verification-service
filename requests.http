@@ -1,4 +1,4 @@
-### Verify User Post API
+### Verify User Post API - Use Postman to send Images
 POST http://localhost:3001/api/verification/user
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NWJhNzNmNWU0MGFkZDk1MThmMGI0NDIiLCJwaG9uZU51bWJlciI6IjQzNy01NTYtNDAzNSIsImlhdCI6MTcwNjcxODE5NywiZXhwIjoxNzA5MzEwMTk3fQ.fB4LEtKwW4v-4--meNBhf4RHmheSp-0OInfcgIvGKyQ
 Content-type: application/json

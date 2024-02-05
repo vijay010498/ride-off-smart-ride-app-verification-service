@@ -22,7 +22,7 @@ export class SqsService implements OnModuleInit {
   ) {
     this.SQS = new SQSClient({
       apiVersion: 'latest',
-      region: this.configService.getAwsRegion(),
+      region: this.configService.getDefaultAwsRegion(),
       credentials: {
         accessKeyId: this.configService.getAWSSQSAccessID(),
         secretAccessKey: this.configService.getAWSSQSSecretKey(),
