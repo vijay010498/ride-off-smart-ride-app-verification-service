@@ -63,7 +63,6 @@ export class UserService {
         status: VerificationStatus.Started,
       };
     } catch (error) {
-      // TODO add code to update user verification status to failed ?
       this.logger.error('verifyUser-error', error);
       return new InternalServerErrorException('Server Error, Please try again');
     }

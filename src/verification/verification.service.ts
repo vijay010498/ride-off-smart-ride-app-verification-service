@@ -38,6 +38,14 @@ export class VerificationService {
     try {
       await this.sqsService.verifyUserEvent(verificationId);
     } catch (error) {
+      // code to update user verification status to failed - if any error in publishing sqs event
+      await this.verificationCollection.findByIdAndUpdate(
+        verificationId,
+        {
+          status: VerificationStatus.Failed,
+        },
+        { new: true },
+      );
       throw error;
     }
   }
