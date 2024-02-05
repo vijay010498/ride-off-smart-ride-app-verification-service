@@ -33,6 +33,7 @@ async function bootstrap() {
     'aws_rekognition_access_key_id',
     'aws_rekognition_secret_access_key',
     'aws_region_us_east_1',
+    'aws_rekognition_selfie_classification_label_model',
   ];
 
   const missingVariables = requiredEnvVariables.filter((variable) => {

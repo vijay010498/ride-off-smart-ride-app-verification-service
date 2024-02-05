@@ -80,4 +80,10 @@ export class MyConfigService {
   getAWSRekognitionSecretKey(): string {
     return this.configService.get<string>('aws_rekognition_secret_access_key');
   }
+
+  getAwsRekognitionSelfiCustomLabelArn(): string {
+    return this.configService.get<string>(
+      'aws_rekognition_selfie_classification_label_model',
+    );
+  }
 }
