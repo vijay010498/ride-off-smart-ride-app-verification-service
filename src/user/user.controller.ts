@@ -59,7 +59,7 @@ export class UserController {
   async verifyUser(
     @UploadedFiles()
     files: UploadedFilesDto,
-    @CurrentUser() user: any, // TODO add guard to make sure user is not already verified
+    @CurrentUser() user: any,
   ) {
     if (!files || !files.selfie || !files.photoId) {
       throw new BadRequestException(

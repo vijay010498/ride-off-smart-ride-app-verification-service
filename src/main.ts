@@ -29,7 +29,11 @@ async function bootstrap() {
     'aws_sqs_secret_access_key',
     'aws_sqs_queue_name',
     'aws_sqs_queue_url',
-    'aws_region',
+    'aws_region_default',
+    'aws_rekognition_access_key_id',
+    'aws_rekognition_secret_access_key',
+    'aws_region_us_east_1',
+    'aws_rekognition_selfie_classification_label_model',
   ];
 
   const missingVariables = requiredEnvVariables.filter((variable) => {
@@ -53,8 +57,6 @@ async function bootstrap() {
     }),
   );
   await app.listen(3000);
-
-  console.log('server-started');
 }
 bootstrap().catch((error) => {
   if (error.code && error.code.startsWith('ENV')) {

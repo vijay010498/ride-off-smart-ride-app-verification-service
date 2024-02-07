@@ -24,52 +24,14 @@ export class UserService {
     private readonly verificationService: VerificationService,
   ) {}
 
-  async getUserByPhone(phoneNumber: string) {
-    const user = await this.userCollection.findOne({
-      phoneNumber,
-    });
-    return user;
-  }
-
-  async createUserByPhone(userObject: any, userId: string) {
-    try {
-      // check if user already exists
-      const existingUser = await this.findById(userId);
-      if (existingUser) throw new Error('User With Given Id already exists');
-      const user = new this.userCollection({ ...userObject });
-      await user.save();
-
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async findById(id: string) {
     return this.userCollection.findById(id);
-  }
-
-  private async _update(id: string, updateUserDto: any) {
-    return this.userCollection
-      .findByIdAndUpdate(id, updateUserDto, { new: true })
-      .exec();
   }
 
   async tokenInBlackList(accessToken: string) {
     return this.UserTokenBlacklistCollection.findOne({
       token: accessToken,
     });
-  }
-
-  async addTokenInBlackList(accessToken: string) {
-    const blackListToken = new this.UserTokenBlacklistCollection({
-      token: accessToken,
-    });
-    return blackListToken.save();
-  }
-
-  async updateUser(userId: string, updateDto: any) {
-    return this._update(userId, updateDto);
   }
 
   async verifyUser(userId: string, selfie: Buffer, photoId: Buffer) {
@@ -92,8 +54,8 @@ export class UserService {
         photoIdResponse.imageURL,
       );
 
-      // step-3 Start Verification in async
-      this.verificationService.startUserVerification(verificationId);
+      // step-3 send verifyUser Event
+      await this.verificationService.sendVerifyUserEvent(verificationId);
 
       // return response
       return {

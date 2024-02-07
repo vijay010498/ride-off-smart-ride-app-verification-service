@@ -11,9 +11,10 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { TokenModule } from './token/token.module';
 import { SqsModule } from './sqs/sqs.module';
 import { SqsProcessorModule } from './sqs_processor/sqs_processor.module';
-import { AwsModule } from './aws/aws.module';
 import { S3Module } from './s3/s3.module';
 import { VerificationModule } from './verification/verification.module';
+import { SnsModule } from './sns/sns.module';
+import { RekognitionModule } from './rekognition/rekognition.module';
 
 @Module({
   imports: [
@@ -44,9 +45,10 @@ import { VerificationModule } from './verification/verification.module';
     TokenModule,
     SqsModule,
     SqsProcessorModule,
-    AwsModule,
     S3Module,
     VerificationModule,
+    SnsModule,
+    RekognitionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

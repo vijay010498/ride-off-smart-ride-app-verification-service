@@ -33,8 +33,12 @@ export class MyConfigService {
     return this.configService.get<string>('aws_sqs_secret_access_key');
   }
 
-  getAwsRegion(): string {
-    return this.configService.get<string>('aws_region');
+  getDefaultAwsRegion(): string {
+    return this.configService.get<string>('aws_region_default');
+  }
+
+  getUsEastOneAwsRegion(): string {
+    return this.configService.get<string>('aws_region_us_east_1');
   }
 
   getSqsQueueName(): string {
@@ -67,5 +71,19 @@ export class MyConfigService {
 
   getAWSS3BucketName(): string {
     return this.configService.get<string>('aws_verifiation_s3_bucket');
+  }
+
+  getAWSRekognitionAccessID(): string {
+    return this.configService.get<string>('aws_rekognition_access_key_id');
+  }
+
+  getAWSRekognitionSecretKey(): string {
+    return this.configService.get<string>('aws_rekognition_secret_access_key');
+  }
+
+  getAwsRekognitionSelfiCustomLabelArn(): string {
+    return this.configService.get<string>(
+      'aws_rekognition_selfie_classification_label_model',
+    );
   }
 }

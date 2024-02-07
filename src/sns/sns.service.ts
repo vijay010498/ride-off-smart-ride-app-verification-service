@@ -1,16 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
 import { MyConfigService } from '../my-config/my-config.service';
+import mongoose from 'mongoose';
+import { Events } from '../common/enums/events.enums';
 
 @Injectable()
-export class AwsService {
-  private readonly logger = new Logger(AwsService.name);
+export class SnsService {
+  private readonly logger = new Logger(SnsService.name);
   private readonly SNS: SNSClient;
 
   constructor(private readonly configService: MyConfigService) {
     this.SNS = new SNSClient({
       apiVersion: 'latest',
-      region: this.configService.getAwsRegion(),
+      region: this.configService.getDefaultAwsRegion(),
       credentials: {
         accessKeyId: this.configService.getAWSSNSAccessID(),
         secretAccessKey: this.configService.getAWSSNSSecretKey(),
@@ -35,5 +37,18 @@ export class AwsService {
         _publishToVerifyTopicARNError,
       );
     }
+  }
+
+  async publishUserFaceVerifiedEvent(
+    userId: mongoose.Types.ObjectId,
+    verificationId: mongoose.Types.ObjectId,
+  ) {
+    const snsMessage = {
+      userId,
+      verificationId,
+      EVENT_TYPE: Events.userFaceVerified,
+    };
+    // {"userId": "65b84dffb9fe51e7778da", "verificationId": "65b84dffb9fe51e777asds", "EVENT_TYPE":"VERIFY_USER_FACE_VERIFIED"}
+    return this._publishToVerifyTopicARN(JSON.stringify(snsMessage));
   }
 }

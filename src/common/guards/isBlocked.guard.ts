@@ -21,10 +21,12 @@ export class IsBlockedGuard implements CanActivate {
 
       const user = await this.userService.findById(userId);
 
-      if (user && !user.isBlocked) {
-        return true;
-      }
-      throw new ForbiddenException('User is Blocked');
+      if (!user) throw new ForbiddenException('User Does not exist');
+      if (user.isBlocked)
+        throw new ForbiddenException(
+          'User is Blocked, Please Send Email to contact@smartride.io',
+        );
+      return true;
     } catch (error) {
       if (error instanceof ForbiddenException) throw error;
       this.logger.error('Error in IsBlockedGuard:', error);
