@@ -3,7 +3,7 @@ import { BadRequestException } from '@nestjs/common';
 import { FileFilterCallback } from 'multer';
 
 export class ImageFileFilter {
-  private readonly allowedExtensions = ['.jpg', '.jpeg', '.png'];
+  private readonly allowedExtensions = ['.jpg', '.jpeg'];
 
   fileFilter(req: any, file: any, callback: FileFilterCallback): void {
     const ext = extname(file.originalname);

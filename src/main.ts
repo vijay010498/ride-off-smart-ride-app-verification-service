@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import { Logger } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const env = process.env.NODE_ENV || 'development';
@@ -56,6 +57,17 @@ async function bootstrap() {
       whitelist: true, // If set to true validator will strip validated object of any properties that do not have any decorators Tip: if no other decorator is suitable for your property use @Allow decorator.
     }),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('Verification Service')
+    .setDescription('Smart Ride App Verification Service')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config, {
+    deepScanRoutes: true,
+  });
+  SwaggerModule.setup('api', app, document);
+
   await app.listen(3000);
 }
 bootstrap().catch((error) => {

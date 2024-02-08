@@ -13,17 +13,31 @@ import { AccessTokenGuard } from '../common/guards/accessToken.guard';
 import { IsBlockedGuard } from '../common/guards/isBlocked.guard';
 import { TokenBlacklistGuard } from '../common/guards/tokenBlacklist.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { VerifyUserDto } from './dtos/verify-user.dto';
 import { ImageFileFilter } from './ImageFileFilter';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { IsSignedUpGuard } from '../common/guards/isSignedUp.guard';
 import { UserNotVerifiedBeforeAndNotStarted } from '../common/guards/userNotVerifiedAndNotStarted.guard';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiForbiddenResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { VerifyUserResponseDto } from './dtos/verify-user-response.dto';
+import { UploadFilesDto } from './dtos/upload-files.dto';
 
-interface UploadedFilesDto extends VerifyUserDto {
-  selfie: Express.Multer.File[];
-  photoId: Express.Multer.File[];
-}
-
+@ApiBearerAuth()
+@ApiTags('USER')
+@ApiForbiddenResponse({
+  description: 'AccessToken is not Valid / User is blocked',
+})
+@ApiUnauthorizedResponse({
+  description: 'Unauthorized',
+})
 @Controller('user')
 @UseGuards(AccessTokenGuard, IsBlockedGuard, TokenBlacklistGuard)
 @UseInterceptors(CurrentUserInterceptor)
@@ -32,8 +46,32 @@ export class UserController {
   private readonly logger = new Logger(UserController.name);
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(IsSignedUpGuard, UserNotVerifiedBeforeAndNotStarted) // user should be signedUp and should not be verified and Verification should not be started before to request new verification
   @Post()
+  @ApiResponse({
+    description: 'Verification Started',
+    type: VerifyUserResponseDto,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Face Verification Of User' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        selfie: {
+          type: 'string',
+          format: 'binary',
+          description: 'Selfie image file (only .jpg or .jpeg files allowed)',
+        },
+        photoId: {
+          type: 'string',
+          format: 'binary',
+          description: 'Photo ID image file (only .jpg or .jpeg files allowed)',
+        },
+      },
+      required: ['selfie', 'photoId'],
+    },
+  })
+  @UseGuards(IsSignedUpGuard, UserNotVerifiedBeforeAndNotStarted) // user should be signedUp and should not be verified and Verification should not be started before to request new verification
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -58,7 +96,7 @@ export class UserController {
   )
   async verifyUser(
     @UploadedFiles()
-    files: UploadedFilesDto,
+    files: UploadFilesDto,
     @CurrentUser() user: any,
   ) {
     if (!files || !files.selfie || !files.photoId) {

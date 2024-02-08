@@ -1,7 +1,7 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   Injectable,
   Logger,
 } from '@nestjs/common';
@@ -22,9 +22,9 @@ export class IsSignedUpGuard implements CanActivate {
       if (user && user.signedUp) {
         return true;
       }
-      throw new ForbiddenException('User Should be SignedUp to get Verified');
+      throw new BadRequestException('User Should be SignedUp to get Verified');
     } catch (error) {
-      if (error instanceof ForbiddenException) throw error;
+      if (error instanceof BadRequestException) throw error;
       this.logger.error('Error in IsSignedUpGuard:', error);
       return false;
     }
