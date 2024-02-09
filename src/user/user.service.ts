@@ -11,6 +11,7 @@ import * as Buffer from 'buffer';
 import { S3Service } from '../s3/s3.service';
 import { VerificationService } from '../verification/verification.service';
 import { VerificationStatus } from '../common/enums/verification-status.enum';
+import { VerifyUserResponseDto } from './dtos/verify-user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -58,11 +59,12 @@ export class UserService {
       await this.verificationService.sendVerifyUserEvent(verificationId);
 
       // return response
-      return {
+      return new VerifyUserResponseDto({
         message: 'Verification Started',
         status: VerificationStatus.Started,
-      };
+      });
     } catch (error) {
+      // TODO make verification status as failed if image upload or create new verification failed
       this.logger.error('verifyUser-error', error);
       return new InternalServerErrorException('Server Error, Please try again');
     }
