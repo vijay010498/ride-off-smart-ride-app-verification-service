@@ -18,6 +18,7 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { IsSignedUpGuard } from '../common/guards/isSignedUp.guard';
 import { UserNotVerifiedBeforeAndNotStarted } from '../common/guards/userNotVerifiedAndNotStarted.guard';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
@@ -33,10 +34,13 @@ import { UploadFilesDto } from './dtos/upload-files.dto';
 @ApiBearerAuth()
 @ApiTags('USER')
 @ApiForbiddenResponse({
-  description: 'AccessToken is not Valid / User is blocked',
+  description: 'User is blocked',
 })
 @ApiUnauthorizedResponse({
-  description: 'Unauthorized',
+  description: 'Invalid Token',
+})
+@ApiBadRequestResponse({
+  description: 'User Does not exist',
 })
 @Controller('user')
 @UseGuards(AccessTokenGuard, IsBlockedGuard, TokenBlacklistGuard)
@@ -70,6 +74,10 @@ export class UserController {
       },
       required: ['selfie', 'photoId'],
     },
+  })
+  @ApiBadRequestResponse({
+    description:
+      'User Should be SignedUp to get Verified / User Already Verified or Verification In progress',
   })
   @UseGuards(IsSignedUpGuard, UserNotVerifiedBeforeAndNotStarted) // user should be signedUp and should not be verified and Verification should not be started before to request new verification
   @UseInterceptors(

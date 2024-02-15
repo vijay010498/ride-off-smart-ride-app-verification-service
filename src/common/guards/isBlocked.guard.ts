@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
@@ -21,7 +22,7 @@ export class IsBlockedGuard implements CanActivate {
 
       const user = await this.userService.findById(userId);
 
-      if (!user) throw new ForbiddenException('User Does not exist');
+      if (!user) throw new BadRequestException('User Does not exist');
       if (user.isBlocked)
         throw new ForbiddenException(
           'User is Blocked, Please Send Email to contact@smartride.io',
