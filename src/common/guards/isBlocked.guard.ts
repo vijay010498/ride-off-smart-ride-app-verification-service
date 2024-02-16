@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { UserService } from '../../user/user.service';
+import { rethrow } from '@nestjs/core/helpers/rethrow';
 
 @Injectable()
 export class IsBlockedGuard implements CanActivate {
@@ -29,7 +30,11 @@ export class IsBlockedGuard implements CanActivate {
         );
       return true;
     } catch (error) {
-      if (error instanceof ForbiddenException) throw error;
+      if (
+        error instanceof ForbiddenException ||
+        error instanceof BadRequestException
+      )
+        rethrow(error);
       this.logger.error('Error in IsBlockedGuard:', error);
       return false;
     }
