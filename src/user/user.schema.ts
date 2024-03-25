@@ -8,6 +8,10 @@ interface Location {
   coordinates: [number, number]; // [longitude, latitude]
 }
 
+export type LastLocation = {
+  lastLocation: Location;
+};
+
 @Schema({ timestamps: true, id: true })
 export class User {
   @Prop({
@@ -37,7 +41,7 @@ export class User {
   faceIdVerified: boolean;
 
   @Prop()
-  faceVerificationId: mongoose.Types.ObjectId;
+  faceVerificationId: mongoose.Types.ObjectId; // I'd given by verification service
 
   @Prop()
   refreshToken: string;
@@ -53,10 +57,26 @@ export class User {
     coordinates: { type: [Number], default: [0, 0] }, // [longitude, latitude]
   })
   lastLocation: Location;
+
+  @Prop({
+    default: false,
+  })
+  online: boolean;
 }
 
 export type UserDocument = User & Document;
 const UserSchema = SchemaFactory.createForClass(User);
+
+// Hooks to update signedUp bool when user is signing-up
+UserSchema.pre('findOneAndUpdate', async function () {
+  // this.getUpdate() returns {email: 'svijayq1@gmail.com' ,  firstName: 'Vijay',  lastName: 'vijay', '$set': { updatedAt: 2024-01-28T01:37:23.023Z }, '$setOnInsert': { createdAt: 2024-01-28T01:37:23.023Z }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const emailUpdated = this.getUpdate().email;
+  if (emailUpdated) {
+    this.set('signedUp', true);
+  }
+});
 
 // Create 2dsphere index for lastLocation
 UserSchema.index({ lastLocation: '2dsphere' });
